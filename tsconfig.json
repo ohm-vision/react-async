@@ -8,11 +8,11 @@
       "esnext"
       // , "webworker"
     ],
+    "declaration": true,
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "incremental": true,
     "esModuleInterop": true,
     "module": "esnext",

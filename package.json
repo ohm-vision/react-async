@@ -4,7 +4,7 @@
   "description": "Wrapper for React's useEffect to support asynchronous calls",
   "author": "Ohm Vision, Inc",
   "license": "MIT",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
