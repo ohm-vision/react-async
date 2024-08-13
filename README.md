@@ -1,6 +1,8 @@
 # useEffectAsync
 Wrapper for react's useEffect to support asynchronous calls
 
+[![npm version](https://badge.fury.io/js/@ohm-vision%2Fuseeffectasync.svg)](https://badge.fury.io/js/@ohm-vision%2Fuseeffectasync)
+
 ## Installation
 Run the following command
 ```
