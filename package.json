@@ -27,7 +27,7 @@
     "typescript": "^5.1.6",
     "webpack-cli": "^4.10.0"
   },
-  "peerDependencies": {
+  "dependencies": {
     "react": "^18.0.0"
   }
 }
