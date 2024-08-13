@@ -22,7 +22,6 @@
     "url": "get+https://github.com/ohm-vision/useEffectAsync.git"
   },
   "devDependencies": {
-    "react": "^18.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.6"
   },
