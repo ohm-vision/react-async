@@ -3,6 +3,8 @@ Wrapper for react's useEffect to support asynchronous calls
 
 [![npm version](https://badge.fury.io/js/@ohm-vision%2Fuseeffectasync.svg)](https://badge.fury.io/js/@ohm-vision%2Fuseeffectasync)
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/1kom)
+
 ## Installation
 Run the following command
 ```
@@ -60,3 +62,6 @@ export function MyAwesomeComponent(props) {
     // todo: do something with the body
 }
 ```
+
+## Contact Me
+[Ohm Vision, Inc](https://ohmvision.com)
