@@ -1,6 +1,6 @@
 {
   "name": "@ohm-vision/useeffectasync",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Wrapper for React's useEffect to support asynchronous calls",
   "author": "Ohm Vision, Inc",
   "license": "MIT",
@@ -8,7 +8,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",
-    "clean": "tsc --build --clean"
+    "clean": "tsc --build --clean",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "react",
