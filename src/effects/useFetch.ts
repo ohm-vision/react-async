@@ -39,11 +39,11 @@ export function useFetch<
     deps?: DependencyList,
     destructor?: ReturnType<EffectCallback>) : [ boolean, Response<TResponseType>, any ]
     {
-    const [ response, setResponse ] = useState<Response<TResponseType>>();
+    const [ response, setResponse ] = useState<Response<TResponseType>>(incompleteResponse(url, responseType));
     const [ error, setError ] = useState<any>();
 
     const loading = useEffectAsync(async (signal) => {
-        setResponse(null);
+        setResponse(incompleteResponse(url, responseType));
         setError(null);
 
         try {
@@ -105,4 +105,55 @@ export function useFetch<
     }, deps, destructor);
 
     return [ loading, response, error ];
+}
+
+/**
+ * Generates a fake response object to prevent null exceptions on initial deconstruction
+ * @param url 
+ * @param responseType 
+ * @returns 
+ */
+function incompleteResponse<
+    TResponseType extends ResponseTypes = ResponseTypes
+    >(url: string | URL | RequestInfo, responseType: TResponseType): Response<TResponseType> {
+
+    const res: any = {
+        headers: new Headers(),
+        ok: false,
+        redirected: false,
+        status: 0,
+        statusText: "LOADING",
+        type: "default",
+        url: toUrlString(url),
+        body: null,
+    } as Response<TResponseType>;
+
+    if (responseType === "raw") {
+        return {
+            ...res,
+            bodyUsed: false,
+            arrayBuffer: noopAsync,
+            blob: noopAsync,
+            formData: noopAsync,
+            json: noopAsync,
+            text: noopAsync,
+            clone: () => incompleteResponse(url, responseType) as _Response,
+        } satisfies _Response as any;
+    }
+
+    return res;
+}
+
+function noopAsync(): any {
+    return Promise.resolve();
+}
+
+function toUrlString(url: string | URL | RequestInfo) {
+    if (url instanceof URL) {
+        return url.toString();
+    } else if (url instanceof Request) {
+        return url.url;
+    } else {
+        return url;
+    }
 }
