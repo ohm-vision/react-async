@@ -18,7 +18,7 @@ There are two effects depending on your needs
 This is the core async effect with nothing special
 
 #### Example
-```
+```ts
 import { useEffectAsync } from "@ohm-vision/useeffectasync"
 
 export function MyAwesomeComponent(props) {
@@ -48,7 +48,7 @@ This accepts all properties of the native `fetch` command and adds the following
   * All other responses, will call the appropriate method to read the `body` and return a mutated response object
 
 #### Example
-```
+```ts
 import { useFetch } from "@ohm-vision/useeffectasync"
 
 export function MyAwesomeComponent(props) {
