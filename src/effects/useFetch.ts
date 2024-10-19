@@ -36,7 +36,7 @@ export function useFetch<
     TResponseType extends ResponseTypes = ResponseTypes
     >(
     { url, responseType, ...init }: UseFetchProps<TResponseType>,
-    deps?: DependencyList,
+    deps: DependencyList,
     destructor?: ReturnType<EffectCallback>) : [ boolean, Response<TResponseType>, any ]
     {
     const [ response, setResponse ] = useState<Response<TResponseType>>(incompleteResponse(url, responseType));
