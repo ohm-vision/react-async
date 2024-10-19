@@ -1,5 +1,4 @@
-export * from "./effects/useEffectAsync";
-
-export * from "./memo/useAsync";
-export * from "./memo/useMemoAsync";
-export * from "./memo/useFetch";
+export * from "./hooks/useEffectAsync";
+export * from "./hooks/useAsync";
+export * from "./hooks/useMemoAsync";
+export * from "./hooks/useFetch";

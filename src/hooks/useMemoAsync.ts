@@ -1,6 +1,6 @@
 import { DependencyList, EffectCallback, useState } from "react";
 
-import { useEffectAsync } from "../effects/useEffectAsync";
+import { useEffectAsync } from "./useEffectAsync";
 
 /**
  * Wraps and creates a memo-like result using the `useState`
