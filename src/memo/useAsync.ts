@@ -17,9 +17,23 @@ export function useAsync<TResult>(factory: (abortSignal: AbortSignal) => Promise
     const [ result, setResult ] = useState<TResult>(undefined);
 
     const loading = useEffectAsync(async (signal) => {
-        const result = await factory(signal);
+        try {
+            const result = await factory(signal);
 
-        setResult(result);
+            // short-circuit to prevent further processing
+            if (signal.aborted) {
+                return;
+            }
+
+            setResult(result);
+        }
+        catch (e) {
+            if (signal.aborted) {
+                return;
+            }
+
+            throw e;
+        }
     }, deps, destructor);
 
     return [loading, result];

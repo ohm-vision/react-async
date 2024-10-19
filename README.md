@@ -32,7 +32,8 @@ export function MyAwesomeComponent(props) {
         // just in case we don't want to use the `useFetch`
         // ie. we have our own API classes, or are calling a third-party sdk
         const result = await fetch("http://example.com", {
-            method: "GET"
+            method: "GET",
+            signal: abortSignal
         });
 
         return await result.json();
@@ -76,9 +77,15 @@ export function MyAwesomeComponent(props) {
 ```
 
 ### useFetch
-This is an extension to the `useEffectAsync` which wraps the standard `fetch` call within an asynchronous operation
+This is an extension to the `useAsync` which wraps the standard `fetch` call using what I consider to be a good standard for handling the operation
 
 Used for loading data on the client
+
+> **Important note:**
+> 
+> Unlike other methods, this hook will capture the error response and return it to you as the third tuple (triple/triplet?)
+> 
+> This is done because unlike the other methods, there is less control over the function lifecycle when using this hook.
 
 #### props (param 1)
 This accepts all properties of the native `fetch` command and adds the following:
@@ -98,6 +105,14 @@ export function MyAwesomeComponent(props) {
     }, [ props.dep1 ], () => {
         console.log("I was unloaded");
     });
+
+    if (loading) {
+        return <>Loading...</>
+    }
+
+    if (error) {
+        return <>ERROR: {error.toString()}</>;
+    }
 
     // todo: do something with the body
 }
@@ -123,7 +138,8 @@ export function MyAwesomeComponent(props) {
         // just in case we don't want to use the `useFetch`
         // ie. we have our own API classes, or are calling a third-party sdk
         const result = await fetch("http://example.com", {
-            method: "GET"
+            method: "GET",
+            signal: abortSignal
         });
 
         return await result.json();

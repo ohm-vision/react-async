@@ -1,6 +1,6 @@
 import { DependencyList, EffectCallback, useState } from "react";
 
-import { useEffectAsync } from "../effects/useEffectAsync";
+import { useAsync } from "./useAsync";
 
 type ResponseTypes = "raw" | "arrayBuffer" | "blob" | "formData" | "text" | "json";
 
@@ -37,17 +37,15 @@ export function useFetch<
     >(
     { url, responseType, ...init }: UseFetchProps<TResponseType>,
     deps: DependencyList,
-    destructor?: ReturnType<EffectCallback>) : [ boolean, Response<TResponseType>, any ]
-    {
-    const [ response, setResponse ] = useState<Response<TResponseType>>(incompleteResponse(url, responseType));
+    destructor?: ReturnType<EffectCallback>) : [ boolean, Response<TResponseType>, any ] {
     const [ error, setError ] = useState<any>();
 
-    const loading = useEffectAsync(async (signal) => {
-        setResponse(incompleteResponse(url, responseType));
-        setError(null);
+    const [ loading, response ] = useAsync<Response<TResponseType>>(async (signal) => {
+        let response = incompleteResponse(url, responseType);
+        let error = null;
 
         try {
-            const fetchResponse = await fetch(url, {
+            const originalResponse = await fetch(url, {
                 ...init,
                 signal
             });
@@ -59,50 +57,56 @@ export function useFetch<
 
             if (responseType === "raw" || !response.ok) {
                 // pass-through: no further processing
-                setResponse(fetchResponse as any);
+                response = originalResponse as any;
             } else {
                 let body: any = null;
-                try {
-                    switch (responseType) {
-                        case "arrayBuffer":
-                            body = await fetchResponse.arrayBuffer();
-                            break;
-                        case "blob":
-                            body = await fetchResponse.blob();
-                            break;
-                        case "formData":
-                            body = await fetchResponse.formData();
-                            break;
-                        case "text":
-                            body = await fetchResponse.text();
-                            break;
-                        case "json":
-                            body = await fetchResponse.json();
-                            break;
-                    }
-                } catch {
-                    // swallow this error
-                    // technically, this should only happen if we are parsing the wrong response type or there is no body
+                switch (responseType) {
+                    case "arrayBuffer":
+                        body = await originalResponse.arrayBuffer();
+                        break;
+                    case "blob":
+                        body = await originalResponse.blob();
+                        break;
+                    case "formData":
+                        body = await originalResponse.formData();
+                        break;
+                    case "text":
+                        body = await originalResponse.text();
+                        break;
+                    case "json":
+                        body = await originalResponse.json();
+                        break;
                 }
 
-                setResponse({
-                    ok: fetchResponse.ok,
-                    headers: fetchResponse.headers,
-                    redirected: fetchResponse.redirected,
-                    status: fetchResponse.status,
-                    statusText: fetchResponse.statusText,
-                    type: fetchResponse.type,
-                    url: fetchResponse.url,
+                response = {
+                    ok: originalResponse.ok,
+                    headers: originalResponse.headers,
+                    redirected: originalResponse.redirected,
+                    status: originalResponse.status,
+                    statusText: originalResponse.statusText,
+                    type: originalResponse.type,
+                    url: originalResponse.url,
                     body: body
-                } as Response<TResponseType>);
+                } as Response<TResponseType>;
             }
         }
         catch (e) {
-            if (!signal.aborted) {
-                setError(e);
+            // only capture the error if it is not a result of a cancellation
+            if (signal.aborted) {
+                return;
             }
+
+            error = e;
+        } finally {
+            setError(error);
+
+            return response;
         }
     }, deps, destructor);
+
+    if (loading) {
+        return [ loading, incompleteResponse(url, responseType), null ];
+    }
 
     return [ loading, response, error ];
 }
