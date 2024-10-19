@@ -1,18 +1,54 @@
-# useEffectAsync
-Wrapper for react's useEffect to support asynchronous calls
+# react-async
+Wrapper for react to support asynchronous calls
 
-[![npm version](https://badge.fury.io/js/@ohm-vision%2Fuseeffectasync.svg)](https://badge.fury.io/js/@ohm-vision%2Fuseeffectasync)
+[![npm version](https://badge.fury.io/js/@ohm-vision%2Freact-async.svg)](https://badge.fury.io/js/@ohm-vision%2Freact-async)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/1kom)
 
 ## Installation
 Run the following command
 ```
-npm install @ohm-vision/useeffectasync
+npm install @ohm-vision/react-async
 ```
 
 ## Usage
-There are two effects depending on your needs
+There are several effects offered depending on your needs
+
+### useAsync
+This is will likely be your best friend and the method you use the most.
+
+It will fire your async function when a dependency has changed and return a Tuple indicating if the method is still loading
+
+> **Important note:**
+> 
+> This method does not wrap anything in a try-catch block, error management is YOUR responsibility
+
+#### Example
+```tsx
+import { useAsync } from "@ohm-vision/react-async"
+
+export function MyAwesomeComponent(props) {
+    const [ loading, result ] = useAsync(async (abortSignal: AbortSignal) => {
+        // just in case we don't want to use the `useFetch`
+        // ie. we have our own API classes, or are calling a third-party sdk
+        const result = await fetch("http://example.com", {
+            method: "GET"
+        });
+
+        return await result.json();
+    }, [ props.dep1 ], () => {
+        console.log("I was unloaded");
+    });
+
+    if (loading) {
+        // todo: show a skeleton component
+        return <>Loading...</>;
+    }
+
+    // todo: do something with the result
+    // note: `result` will be undefined until the first load is complete
+}
+```
 
 ### useEffectAsync
 This is the core async effect with nothing special
@@ -23,7 +59,7 @@ This is the core async effect with nothing special
 
 #### Example
 ```tsx
-import { useEffectAsync } from "@ohm-vision/useeffectasync"
+import { useEffectAsync } from "@ohm-vision/react-async"
 
 export function MyAwesomeComponent(props) {
     const loading = useEffectAsync(async (signal: AbortSignal) => {
@@ -53,7 +89,7 @@ This accepts all properties of the native `fetch` command and adds the following
 
 #### Example
 ```tsx
-import { useFetch } from "@ohm-vision/useeffectasync"
+import { useFetch } from "@ohm-vision/react-async"
 
 export function MyAwesomeComponent(props) {
     const [ loading, { body }, error ] = useFetch({
@@ -67,22 +103,20 @@ export function MyAwesomeComponent(props) {
 }
 ```
 
-### useMemoAsync/useMemoLoadingAsync
+### useMemoAsync
 This is an extension to the `useEffectAsync` which attempts to operate similarly to React's native `useMemo` function
 
 Used for firing asynchronous calls which return a result, could be a good alternative if you want to do something special.
 
-I offer two variants:
-1. `useMemoAsync` this acts the closest to the native `useMemo`. It returns the result or the previously computed result
-2. `useMemoLoadingAsync` building off of needed results, this will instead return a Tuple indicating if loading is happening and the previously cached result. This is a good option if you want to show some loading or disable a component
+This method will just return the result or the previous value if an async call is still running
 
 > **Important note:**
 > 
 > This method does not wrap anything in a try-catch block, error management is YOUR responsibility
 
-#### Example (useMemoAsync)
+#### Example
 ```tsx
-import { useMemoAsync } from "@ohm-vision/useeffectasync"
+import { useMemoAsync } from "@ohm-vision/react-async"
 
 export function MyAwesomeComponent(props) {
     const result = useMemoAsync(async (abortSignal: AbortSignal) => {
@@ -96,33 +130,6 @@ export function MyAwesomeComponent(props) {
     }, [ props.dep1 ], () => {
         console.log("I was unloaded");
     });
-
-    // todo: do something with the result
-    // note: `result` will be undefined until the first load is complete
-}
-```
-
-#### Example (useMemoLoadingAsync)
-```tsx
-import { useMemoLoadingAsync } from "@ohm-vision/useeffectasync"
-
-export function MyAwesomeComponent(props) {
-    const [ loading, result ] = useMemoLoadingAsync(async (abortSignal: AbortSignal) => {
-        // just in case we don't want to use the `useFetch`
-        // ie. we have our own API classes, or are calling a third-party sdk
-        const result = await fetch("http://example.com", {
-            method: "GET"
-        });
-
-        return await result.json();
-    }, [ props.dep1 ], () => {
-        console.log("I was unloaded");
-    });
-
-    if (loading) {
-        // todo: show a skeleton component
-        return <>Loading...</>;
-    }
 
     // todo: do something with the result
     // note: `result` will be undefined until the first load is complete

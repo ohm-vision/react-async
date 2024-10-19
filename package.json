@@ -1,7 +1,7 @@
 {
-  "name": "@ohm-vision/useeffectasync",
-  "version": "1.1.0",
-  "description": "Wrapper for React's useEffect to support asynchronous calls",
+  "name": "@ohm-vision/react-async",
+  "version": "1.0.0",
+  "description": "Extentions to React to support asynchronous calls",
   "author": "Ohm Vision, Inc",
   "license": "MIT",
   "main": "dist/index.js",
@@ -19,11 +19,12 @@
     "useFetch",
     "useEffectAsync",
     "useMemo",
-    "useMemoAsync"
+    "useMemoAsync",
+    "useAsync"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ohm-vision/useEffectAsync.git"
+    "url": "git+https://github.com/ohm-vision/react-async.git"
   },
   "devDependencies": {
     "@types/react": "^18.3.11",

@@ -1,6 +1,6 @@
 import { DependencyList, EffectCallback, useState } from "react";
 
-import { useEffectAsync } from "./useEffectAsync";
+import { useEffectAsync } from "../effects/useEffectAsync";
 
 type ResponseTypes = "raw" | "arrayBuffer" | "blob" | "formData" | "text" | "json";
 
