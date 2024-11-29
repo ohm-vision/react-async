@@ -13,7 +13,7 @@ import { useEffectAsync } from "./useEffectAsync";
  * @param destructor Destructor
  * @returns [ `boolean`, `TResult | undefined` ]
  */
-export function useAsync<TResult>(factory: (abortSignal: AbortSignal) => Promise<TResult>, deps: DependencyList, destructor?: ReturnType<EffectCallback>) : [boolean, TResult] {
+export function useAsync<TResult>(factory: (abortSignal: AbortSignal) => Promise<TResult>, deps: DependencyList, destructor?: ReturnType<EffectCallback>) : [TResult, boolean] {
     const [ result, setResult ] = useState<TResult>(undefined);
 
     const loading = useEffectAsync(async (signal) => {
@@ -36,5 +36,5 @@ export function useAsync<TResult>(factory: (abortSignal: AbortSignal) => Promise
         }
     }, deps, destructor);
 
-    return [loading, result];
+    return [result, loading];
 }

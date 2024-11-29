@@ -28,7 +28,7 @@ It will fire your async function when a dependency has changed and return a Tupl
 import { useAsync } from "@ohm-vision/react-async"
 
 export function MyAwesomeComponent(props) {
-    const [ loading, result ] = useAsync(async (abortSignal: AbortSignal) => {
+    const [ result, loading ] = useAsync(async (abortSignal: AbortSignal) => {
         // just in case we don't want to use the `useFetch`
         // ie. we have our own API classes, or are calling a third-party sdk
         const result = await fetch("http://example.com", {
