@@ -1,6 +1,7 @@
 import { DependencyList, EffectCallback, useState } from "react";
 
 import { useEffectAsync } from "./useEffectAsync";
+import { AbortableSignal } from "@/types/abortable.signal";
 
 /**
  * Wraps and creates a memo-like result using the `useState`
@@ -11,29 +12,17 @@ import { useEffectAsync } from "./useEffectAsync";
  * @param factory Asynchronous function to call
  * @param deps Dependency List
  * @param destructor Destructor
- * @returns [ `boolean`, `TResult | undefined` ]
+ * @returns [ `TResult | undefined` | `boolean` ]
  */
-export function useAsync<TResult>(factory: (abortSignal: AbortSignal) => Promise<TResult>, deps: DependencyList, destructor?: ReturnType<EffectCallback>) : [TResult, boolean] {
+export function useAsync<TResult>(factory: (abortSignal: AbortableSignal) => Promise<TResult>, deps: DependencyList, destructor?: ReturnType<EffectCallback>) : [TResult | undefined, boolean] {
     const [ result, setResult ] = useState<TResult>(undefined);
 
     const loading = useEffectAsync(async (signal) => {
-        try {
-            const result = await factory(signal);
+        const result = await factory(signal);
 
-            // short-circuit to prevent further processing
-            if (signal.aborted) {
-                return;
-            }
+        signal.throwIfAborted();
 
-            setResult(result);
-        }
-        catch (e) {
-            if (signal.aborted) {
-                return;
-            }
-
-            throw e;
-        }
+        setResult(result);
     }, deps, destructor);
 
     return [result, loading];

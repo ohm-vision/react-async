@@ -1,6 +1,7 @@
 import { DependencyList, EffectCallback, useState } from "react";
 
 import { useEffectAsync } from "./useEffectAsync";
+import { AbortableSignal } from "@/types/abortable.signal";
 
 /**
  * Wraps and creates a memo-like result using the `useState`
@@ -13,11 +14,13 @@ import { useEffectAsync } from "./useEffectAsync";
  * @param destructor Destructor
  * @returns `TResult | undefined`
  */
-export function useMemoAsync<TResult>(factory: (abortSignal: AbortSignal) => Promise<TResult>, deps: DependencyList, destructor?: ReturnType<EffectCallback>) : TResult {
+export function useMemoAsync<TResult>(factory: (abortSignal: AbortableSignal) => Promise<TResult>, deps: DependencyList, destructor?: ReturnType<EffectCallback>) : TResult {
     const [ result, setResult ] = useState<TResult>(undefined);
 
     useEffectAsync(async (signal) => {
         const result = await factory(signal);
+
+        signal.throwIfAborted();
 
         setResult(result);
     }, deps, destructor);
