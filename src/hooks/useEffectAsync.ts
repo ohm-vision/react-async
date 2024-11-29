@@ -20,7 +20,7 @@ export function useEffectAsync(effect: (signal: AbortController) => Promise<void
         effect(ctrl)
             .catch(e => {
                 if (ctrl.signal.aborted) {
-                    console.trace("[useEffectAsync] - signal aborted", ctrl.signal.reason, e);
+                    console.trace("[useEffectAsync] - signal aborted", ctrl.signal.reason);
                     return;
                 }
 
