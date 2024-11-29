@@ -40,7 +40,7 @@ export function useFetch<
     destructor?: ReturnType<EffectCallback>) : [ boolean, Response<TResponseType>, any ] {
     const [ error, setError ] = useState<any>();
 
-    const [ response, loading ] = useAsync<Response<TResponseType>>(async (signal) => {
+    const [ response, loading ] = useAsync<Response<TResponseType>>(async ({ signal }) => {
         let response = incompleteResponse(url, responseType);
         let error = null;
 

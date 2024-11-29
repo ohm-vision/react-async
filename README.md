@@ -28,7 +28,7 @@ It will fire your async function when a dependency has changed and return a Tupl
 import { useAsync } from "@ohm-vision/react-async"
 
 export function MyAwesomeComponent(props) {
-    const [ result, loading ] = useAsync(async (abortSignal: AbortSignal) => {
+    const [ result, loading ] = useAsync(async ({ signal: abortSignal }: AbortController) => {
         // just in case we don't want to use the `useFetch`
         // ie. we have our own API classes, or are calling a third-party sdk
         const result = await fetch("http://example.com", {
@@ -63,12 +63,12 @@ This is the core async effect with nothing special
 import { useEffectAsync } from "@ohm-vision/react-async"
 
 export function MyAwesomeComponent(props) {
-    const loading = useEffectAsync(async (signal: AbortSignal) => {
+    const loading = useEffectAsync(async (abortCtrl: AbortController) => {
         // some special call
 
         // all processing is handled here - you manage everything
 
-        // the AbortSignal will automatically be called when the component is unmounted
+        // the AbortSignal will automatically be aborted when the component is unmounted
     }, [ props.dep1 ], () => {
         console.log("I was unloaded");
     });
@@ -76,7 +76,41 @@ export function MyAwesomeComponent(props) {
 }
 ```
 
-### useFetch
+### useMemoAsync
+This is an extension to the `useEffectAsync` which attempts to operate similarly to React's native `useMemo` function
+
+Used for firing asynchronous calls which return a result, could be a good alternative if you want to do something special.
+
+This method will just return the result or the previous value if an async call is still running
+
+> **Important note:**
+> 
+> This method does not wrap anything in a try-catch block, error management is YOUR responsibility
+
+#### Example
+```tsx
+import { useMemoAsync } from "@ohm-vision/react-async"
+
+export function MyAwesomeComponent(props) {
+    const result = useMemoAsync(async ({ abortSignal }: AbortController) => {
+        // just in case we don't want to use the `useFetch`
+        // ie. we have our own API classes, or are calling a third-party sdk
+        const result = await fetch("http://example.com", {
+            method: "GET",
+            signal: abortSignal
+        });
+
+        return await result.json();
+    }, [ props.dep1 ], () => {
+        console.log("I was unloaded");
+    });
+
+    // todo: do something with the result
+    // note: `result` will be undefined until the first load is complete
+}
+```
+
+### useFetch - preview
 This is an extension to the `useAsync` which wraps the standard `fetch` call using what I consider to be a good standard for handling the operation
 
 Used for loading data on the client
@@ -115,40 +149,6 @@ export function MyAwesomeComponent(props) {
     }
 
     // todo: do something with the body
-}
-```
-
-### useMemoAsync
-This is an extension to the `useEffectAsync` which attempts to operate similarly to React's native `useMemo` function
-
-Used for firing asynchronous calls which return a result, could be a good alternative if you want to do something special.
-
-This method will just return the result or the previous value if an async call is still running
-
-> **Important note:**
-> 
-> This method does not wrap anything in a try-catch block, error management is YOUR responsibility
-
-#### Example
-```tsx
-import { useMemoAsync } from "@ohm-vision/react-async"
-
-export function MyAwesomeComponent(props) {
-    const result = useMemoAsync(async (abortSignal: AbortSignal) => {
-        // just in case we don't want to use the `useFetch`
-        // ie. we have our own API classes, or are calling a third-party sdk
-        const result = await fetch("http://example.com", {
-            method: "GET",
-            signal: abortSignal
-        });
-
-        return await result.json();
-    }, [ props.dep1 ], () => {
-        console.log("I was unloaded");
-    });
-
-    // todo: do something with the result
-    // note: `result` will be undefined until the first load is complete
 }
 ```
 

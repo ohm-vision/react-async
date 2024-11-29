@@ -1,4 +1,3 @@
-import { AbortableSignal } from "@/types/abortable.signal";
 import { DependencyList, EffectCallback, useEffect, useState } from "react";
 
 /**
@@ -8,28 +7,20 @@ import { DependencyList, EffectCallback, useEffect, useState } from "react";
  * @param destructor Destructor
  * @returns `true` if the effect is still running, or `false` once the effect completes
  */
-export function useEffectAsync(effect: (signal: AbortableSignal) => Promise<void>, deps: DependencyList, destructor?: ReturnType<EffectCallback>): boolean {
+export function useEffectAsync(effect: (signal: AbortController) => Promise<void>, deps: DependencyList, destructor?: ReturnType<EffectCallback>): boolean {
     const [ loading, setLoading ] = useState(true);
 
     useEffect(() => {
         // reset the loading state
         setLoading(true);
 
-        const controller = new AbortController();
-
-        function abort(reason: any) {
-            controller.abort(reason);
-            controller.signal.throwIfAborted();
-        }
-
-        const signal: AbortableSignal = controller.signal;
-        signal.abort = abort;
+        const ctrl = new AbortController();
 
         // fire effect
-        effect(controller.signal)
+        effect(ctrl)
             .catch(e => {
-                if (signal.aborted) {
-                    console.trace("[useEffectAsync] - signal aborted", signal.reason, e);
+                if (ctrl.signal.aborted) {
+                    console.trace("[useEffectAsync] - signal aborted", ctrl.signal.reason, e);
                     return;
                 }
 
@@ -39,7 +30,7 @@ export function useEffectAsync(effect: (signal: AbortableSignal) => Promise<void
 
         return () => {
             // signal abort
-            controller.abort("deps");
+            ctrl.abort("deps");
 
             // fire deconstructor
             if (typeof destructor === "function") {
