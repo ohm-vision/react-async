@@ -51,31 +51,6 @@ export function MyAwesomeComponent(props) {
 }
 ```
 
-### useEffectAsync
-This is the core async effect with nothing special
-
-> **Important note:**
-> 
-> This method does not wrap anything in a try-catch block, error management is YOUR responsibility
-
-#### Example
-```tsx
-import { useEffectAsync } from "@ohm-vision/react-async"
-
-export function MyAwesomeComponent(props) {
-    const loading = useEffectAsync(async (abortCtrl: AbortController) => {
-        // some special call
-
-        // all processing is handled here - you manage everything
-
-        // the AbortSignal will automatically be aborted when the component is unmounted
-    }, [ props.dep1 ], () => {
-        console.log("I was unloaded");
-    });
-
-}
-```
-
 ### useMemoAsync
 This is an extension to the `useEffectAsync` which attempts to operate similarly to React's native `useMemo` function
 
@@ -107,6 +82,31 @@ export function MyAwesomeComponent(props) {
 
     // todo: do something with the result
     // note: `result` will be undefined until the first load is complete
+}
+```
+
+### useEffectAsync
+This is the core async effect with nothing special
+
+> **Important note:**
+> 
+> This method does not wrap anything in a try-catch block, error management is YOUR responsibility
+
+#### Example
+```tsx
+import { useEffectAsync } from "@ohm-vision/react-async"
+
+export function MyAwesomeComponent(props) {
+    const loading = useEffectAsync(async (abortCtrl: AbortController) => {
+        // some special call
+
+        // all processing is handled here - you manage everything
+
+        // the AbortSignal will automatically be aborted when the component is unmounted
+    }, [ props.dep1 ], () => {
+        console.log("I was unloaded");
+    });
+
 }
 ```
 

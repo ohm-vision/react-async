@@ -1,3 +1,4 @@
+import { AsyncController } from "../utils/async-controller.util";
 import { DependencyList, EffectCallback, useEffect, useState } from "react";
 
 /**
@@ -14,7 +15,8 @@ export function useEffectAsync(effect: (signal: AbortController) => Promise<void
         // reset the loading state
         setLoading(true);
 
-        const ctrl = new AbortController();
+        //- create an abort controller where 
+        const ctrl = new AsyncController();
 
         // fire effect
         effect(ctrl)
