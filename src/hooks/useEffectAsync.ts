@@ -1,4 +1,3 @@
-import { AsyncController } from "../utils/async-controller.util";
 import { DependencyList, EffectCallback, useEffect, useState } from "react";
 
 /**
@@ -16,7 +15,14 @@ export function useEffectAsync(effect: (signal: AbortController) => Promise<void
         setLoading(true);
 
         //- create an abort controller where 
-        const ctrl = new AsyncController();
+        const ctrl = new AbortController();
+
+        const _abort = ctrl.abort.bind(ctrl);
+
+        ctrl.abort = function abort(reason?: any) {
+            _abort(reason);
+            this.signal.throwIfAborted();
+        }
 
         // fire effect
         effect(ctrl)
@@ -32,7 +38,7 @@ export function useEffectAsync(effect: (signal: AbortController) => Promise<void
 
         return () => {
             // signal abort
-            ctrl.abort("deps");
+            _abort("deps");
 
             // fire deconstructor
             if (typeof destructor === "function") {
